@@ -193,7 +193,7 @@ public class ProcessSchedulerGUI extends JFrame {
 
     private void showOutput(String output) {
         JFrame outputFrame = new JFrame("Scheduler Output");
-        outputFrame.setSize(800, 600);
+        outputFrame.setSize(1000, 600);
 
         JPanel panel = new JPanel(new BorderLayout());
 
@@ -232,14 +232,15 @@ public class ProcessSchedulerGUI extends JFrame {
         }
 
         // 결과 출력
-        processMap.forEach((id, list) -> {
-            System.out.println("Process " + id + ":");
-            list.forEach(processInfo -> System.out.println(processInfo.toString()));
-            System.out.println();
-        });
+//        processMap.forEach((id, list) -> {
+//            System.out.println("Process " + id + ":");
+//            list.forEach(processInfo -> System.out.println(processInfo.toString()));
+//            System.out.println();
+//        });
 
         GanttChart ganttChart = new GanttChart(processMap, maxTime);
-        JScrollPane chartScrollPane = new JScrollPane(ganttChart);
+        JScrollPane chartScrollPane = new JScrollPane(ganttChart, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+
 
         panel.add(chartScrollPane, BorderLayout.SOUTH);
         outputFrame.add(panel);

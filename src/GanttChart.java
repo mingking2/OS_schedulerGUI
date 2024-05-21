@@ -16,23 +16,24 @@ public class GanttChart extends JPanel {
         this.processMap = processMap;
         this.maxTime = maxTime;
         this.fixPixel = 5;
-        this.processHeight = 10;
-        this.processGap = 5;
-        this.setPreferredSize(new Dimension(800, processMap.size() * 50));
+        this.processHeight = 20;
+        this.processGap = 20;
+        this.setPreferredSize(new Dimension(1000, processMap.size() * 80));
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+        drawTitle(g);
         drawLegend(g);
 
-        int y = processGap + 50;
+        int y = processGap + 70;
         for (Map.Entry<Integer, ArrayList<ProcessInfo>> entry : processMap.entrySet()) {
             int processId = entry.getKey();
             ArrayList<ProcessInfo> infoList = entry.getValue();
             int x = 50;
 
-            g.drawString("Process " + processId, 5, y + 15);
+            g.drawString("Process " + processId, 5, y+processHeight);
 
             for (ProcessInfo info : infoList) {
                 int width = (fixPixel);
@@ -47,9 +48,15 @@ public class GanttChart extends JPanel {
         }
     }
 
+    private void drawTitle(Graphics g) {
+        g.setFont(new Font("Arial", Font.BOLD, 20));
+        g.drawString("Gantt Chart", getWidth() / 2 - 50, 30);
+        g.setFont(new Font("Arial", Font.PLAIN, 12));
+    }
+
     private void drawLegend(Graphics g) {
         int x = 50;
-        int y = 20;
+        int y = 50;
         int legendWidth = 50;
         int legendHeight = 20;
 
