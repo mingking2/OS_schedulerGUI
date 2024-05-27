@@ -15,7 +15,7 @@ public class GanttChart extends JPanel {
     public GanttChart(HashMap<Integer, ArrayList<ProcessInfo>> processMap, int maxTime) {
         this.processMap = processMap;
         this.maxTime = maxTime;
-        this.fixPixel = 5;
+        this.fixPixel = 20;
         this.processHeight = 20;
         this.processGap = 20;
         this.setPreferredSize(new Dimension(1000, processMap.size() * 80));

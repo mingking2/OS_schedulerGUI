@@ -239,7 +239,7 @@ public class ProcessSchedulerGUI extends JFrame {
 //        });
 
         GanttChart ganttChart = new GanttChart(processMap, maxTime);
-        JScrollPane chartScrollPane = new JScrollPane(ganttChart, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        JScrollPane chartScrollPane = new JScrollPane(ganttChart, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
 
         panel.add(chartScrollPane, BorderLayout.SOUTH);
