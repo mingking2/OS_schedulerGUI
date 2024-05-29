@@ -205,13 +205,17 @@ public class ProcessSchedulerGUI extends JFrame {
 
         String[] lines = output.split("\n");
         HashMap<Integer, ArrayList<ProcessInfo>> processMap = new HashMap<>();
+        ArrayList<ResultInfo> result = new ArrayList<>();
         int maxTime = 0;
 
         Pattern pattern = Pattern.compile("(\\d+)s : (Process|Monitor :) (\\d+) is (submitted|running|working|waiting)");
         Pattern pattern1 = Pattern.compile("(\\d+)s : (Monitor :) (\\d+) finished");
+        Pattern pattern2 = Pattern.compile("Average (Response|Waiting|Turnaround) Time: (\\d+\\.\\d+)");
+
         for(String line : lines) {
             Matcher matcher = pattern.matcher(line);
             Matcher matcher1 = pattern1.matcher(line);
+            Matcher matcher2 = pattern2.matcher(line);
             if (matcher.find()) {
                 int time = Integer.parseInt(matcher.group(1));
                 int processId = Integer.parseInt(matcher.group(3));
@@ -229,6 +233,11 @@ public class ProcessSchedulerGUI extends JFrame {
                 processMap.get(processId1).add(new ProcessInfo(time1, "finished"));
                 if (time1 > maxTime) maxTime = time1;
             }
+            if (matcher2.find()) {
+                double time2 = Double.parseDouble((matcher2.group(2)));
+                result.add(new ResultInfo(time2));
+                System.out.println("time2 = " + time2);
+            }
         }
 
         // 결과 출력
@@ -238,7 +247,7 @@ public class ProcessSchedulerGUI extends JFrame {
 //            System.out.println();
 //        });
 
-        GanttChart ganttChart = new GanttChart(processMap, maxTime);
+        GanttChart ganttChart = new GanttChart(processMap, maxTime, result);
         JScrollPane chartScrollPane = new JScrollPane(ganttChart, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
 
