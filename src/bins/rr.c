@@ -251,7 +251,7 @@ static void job_two_c(t_setting *set, int running_id, t_ready_queue **job, int t
 		if (flag == 1) {
 			pthread_mutex_lock(set->mutex_list->cpu);
 			set->values->process_on_cpu = -1;
-//            set->values->cpu_working = FALSE;
+            // set->values->cpu_working = FALSE;
 			pthread_mutex_unlock(set->mutex_list->cpu);
 		}
     }

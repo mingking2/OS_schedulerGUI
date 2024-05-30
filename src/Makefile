@@ -4,6 +4,8 @@ JAVAC	=	javac
 SOURCE	=	ProcessSchedulerGUI.java\
 			ProcessInfo.java\
 			GanttChart.java\
+			InitInfo.java\
+			ResultInfo.java\
 
 CLASSES	=	$(SOURCE:.java=.class)
 
