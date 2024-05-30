@@ -184,6 +184,10 @@ static void job_one(t_setting *set, t_ready_queue **ready_queue, t_ready_queue *
         id = (*job)->id;
 
         pthread_mutex_unlock(set->mutex_list->ready_queue);
+        pthread_mutex_lock(set->mutex_list->t);
+        if (set->values->time > 0)
+            set->values->time += CONTEXT_SWITCH;
+        pthread_mutex_unlock(set->mutex_list->t);
         pthread_mutex_lock(set->mutex_list->cpu);
         set->values->process_on_cpu = id;
         pthread_mutex_unlock(set->mutex_list->cpu);

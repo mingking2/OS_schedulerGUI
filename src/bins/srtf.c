@@ -48,6 +48,10 @@ static void job_one(t_setting *set, t_ready_queue *ready_queue, int *running_id,
             pthread_mutex_lock(set->mutex_list->r_t);
             set->values->remaining_time = shortest_job->remaining_time;
             pthread_mutex_unlock(set->mutex_list->r_t);
+            pthread_mutex_lock(set->mutex_list->t);
+            if (set->values->time > 0)
+                set->values->time += CONTEXT_SWITCH;
+            pthread_mutex_unlock(set->mutex_list->t);
             pthread_mutex_lock(set->mutex_list->p);
 			if (*running_id != id && *running_id != -1)
 				printf("%ds : Monitor : %d switched out\n", set->values->time, *running_id);

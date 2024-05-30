@@ -4,6 +4,7 @@
 #include "init.h"
 #include <pthread.h>
 #include <stdio.h>
+#include <sys/_pthread/_pthread_mutex_t.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <limits.h>
@@ -128,6 +129,10 @@ static void job_one(t_setting *set, t_ready_queue **ready_queue, t_ready_queue *
         pthread_mutex_lock(set->mutex_list->cpu);
         set->values->process_on_cpu = id;
         pthread_mutex_unlock(set->mutex_list->cpu);
+		pthread_mutex_lock(set->mutex_list->t);
+		if (set->values->time > 0)
+			set->values->time += CONTEXT_SWITCH;
+		pthread_mutex_unlock(set->mutex_list->t);
         pthread_mutex_lock(set->mutex_list->p);
         printf("%ds : Monitor : %d loaded on cpu\n", time, id);
         pthread_mutex_unlock(set->mutex_list->p);
