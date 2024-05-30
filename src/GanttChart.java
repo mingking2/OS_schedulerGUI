@@ -67,8 +67,8 @@ public class GanttChart extends JPanel {
         int legendWidth = 50;
         int legendHeight = 20;
 
-        String[] actions = {"working", "waiting", "finished"};
-        Color[] colors = {Color.BLUE, Color.ORANGE, Color.RED};
+        String[] actions = {"working", "waiting"};
+        Color[] colors = {Color.BLUE, Color.ORANGE};
 
         for (int i = 0; i < actions.length; i++) {
             g.setColor(colors[i]);
