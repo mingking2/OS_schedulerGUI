@@ -7,18 +7,43 @@ import java.util.Map;
 public class GanttChart extends JPanel {
     private final HashMap<Integer, ArrayList<ProcessInfo>> processMap;
     private final int maxTime;
-    private final int fixPixel;
+    private final ArrayList<ResultInfo> resultInfos;
+    private final int cellWidth;
     private final int processHeight;
     private final int processGap;
+    private final JPanel[][] cells;
 
 
-    public GanttChart(HashMap<Integer, ArrayList<ProcessInfo>> processMap, int maxTime) {
+    public GanttChart(HashMap<Integer, ArrayList<ProcessInfo>> processMap, int maxTime, ArrayList<ResultInfo> resultInfos) {
         this.processMap = processMap;
         this.maxTime = maxTime;
-        this.fixPixel = 20;
+        this.resultInfos = resultInfos;
+        this.cellWidth = 5;
         this.processHeight = 20;
         this.processGap = 20;
-        this.setPreferredSize(new Dimension(1000, processMap.size() * 80));
+        this.cells = new JPanel[processMap.size()][maxTime];
+
+        setLayout(null);
+        this.setPreferredSize(new Dimension((maxTime + 2) * cellWidth, processMap.size() * 80 + 100));
+        initializeCells();
+    }
+
+    private void initializeCells() {
+        int y = processGap + 70;
+        int processIndex = 0;
+        for (Map.Entry<Integer, ArrayList<ProcessInfo>> entry : processMap.entrySet()) {
+            int x = 50;
+            for (int time = 0; time < maxTime; time++) {
+                cells[processIndex][time] = new JPanel();
+                cells[processIndex][time].setBackground(Color.WHITE);
+                cells[processIndex][time].setBorder(BorderFactory.createLineBorder(Color.BLACK));
+                cells[processIndex][time].setBounds(x, y, cellWidth, processHeight);
+                add(cells[processIndex][time]);
+                x += cellWidth;
+            }
+            y += processHeight + processGap;
+            processIndex++;
+        }
     }
 
     @Override
@@ -26,26 +51,8 @@ public class GanttChart extends JPanel {
         super.paintComponent(g);
         drawTitle(g);
         drawLegend(g);
-
-        int y = processGap + 70;
-        for (Map.Entry<Integer, ArrayList<ProcessInfo>> entry : processMap.entrySet()) {
-            int processId = entry.getKey();
-            ArrayList<ProcessInfo> infoList = entry.getValue();
-            int x = 50;
-
-            g.drawString("Process " + processId, 5, y+processHeight);
-
-            for (ProcessInfo info : infoList) {
-                int width = (fixPixel);
-                Color color = getColorForAction(info.getAction());
-                g.setColor(color);
-                g.fillRect(x+20,y,width,processHeight);
-                g.setColor(Color.BLACK);
-                g.drawRect(x+20,y,width,processHeight);
-                x += width;
-            }
-            y += processHeight + processGap;
-        }
+        updateCells();
+        drawResult(g);
     }
 
     private void drawTitle(Graphics g) {
@@ -60,8 +67,8 @@ public class GanttChart extends JPanel {
         int legendWidth = 50;
         int legendHeight = 20;
 
-        String[] actions = {"submitted", "running", "working", "waiting", "finished"};
-        Color[] colors = {Color.YELLOW, Color.GREEN, Color.BLUE, Color.ORANGE, Color.RED};
+        String[] actions = {"working", "waiting", "finished"};
+        Color[] colors = {Color.BLUE, Color.ORANGE, Color.RED};
 
         for (int i = 0; i < actions.length; i++) {
             g.setColor(colors[i]);
@@ -73,20 +80,40 @@ public class GanttChart extends JPanel {
         }
     }
 
+    private void updateCells() {
+        int processIndex = 0;
+        for (Map.Entry<Integer, ArrayList<ProcessInfo>> entry : processMap.entrySet()) {
+            int processId = entry.getKey();
+            ArrayList<ProcessInfo> infoList = entry.getValue();
+
+            for (ProcessInfo info : infoList) {
+                int time = info.getTime();
+                if (time > 0 && time < maxTime) {
+                    Color color = getColorForAction(info.getAction());
+                    cells[processIndex][time-1].setBackground(color);
+                }
+            }
+            processIndex++;
+        }
+    }
+
+    private void drawResult(Graphics g) {
+        int y = getHeight() - 120;
+        g.setFont(new Font("Arial", Font.BOLD, 16));
+        g.setColor(Color.BLACK);
+        g.drawString("Average Response Time: " + resultInfos.get(0).getTime(), 50, y);
+        g.drawString("Average Waiting Time: " + resultInfos.get(1).getTime(), 50, y + 20);
+        g.drawString("Average Turnaround Time: " + resultInfos.get(2).getTime(), 50, y + 40);
+    }
+
     private Color getColorForAction(String action) {
         switch (action) {
-            case "submitted":
-                return Color.YELLOW;
-            case "running":
-                return Color.GREEN;
-            case "working":
+            case "working", "running":
                 return Color.BLUE;
             case "waiting":
                 return Color.ORANGE;
-            case "finished":
-                return Color.RED;
             default:
-                return Color.GRAY;
+                return Color.WHITE;
         }
     }
 }
