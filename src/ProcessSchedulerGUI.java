@@ -11,14 +11,14 @@ public class ProcessSchedulerGUI extends JFrame {
     private JTable table;
     private String headerLine;
     private JTextField processIdField, burstTimeField, arrivalTimeField, priorityField;
+    private JTextField contextSwitchField, quantumField, rqSizeField;
+    private String contextSwitch = "0", quantum = "20", rqSize = "3";
 
     public ProcessSchedulerGUI() {
         setTitle("Process Scheduler");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(800, 400);
         setLocationRelativeTo(null);
-
-        headerLine = "Process ID Burst Time Arrival Time Priority";
 
         tableModel = new DefaultTableModel(new Object[]{"Process ID", "Burst Time", "Arrival Time", "Priority"}, 0);
         table = new JTable(tableModel);
@@ -36,13 +36,19 @@ public class ProcessSchedulerGUI extends JFrame {
         JButton addButton = new JButton("Add");
         addButton.addActionListener(e -> addRow());
 
+        JButton setButton = new JButton("Set");
+        setButton.addActionListener(e -> setInit());
+
         processIdField = new JTextField(5);
         burstTimeField = new JTextField(5);
         arrivalTimeField = new JTextField(5);
         priorityField = new JTextField(5);
 
+        contextSwitchField = new JTextField(5);
+        quantumField = new JTextField(5);
+        rqSizeField = new JTextField(5);
 
-        JPanel inputPanel = new JPanel();
+        JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         inputPanel.add(new JLabel("Process ID:"));
         inputPanel.add(processIdField);
         inputPanel.add(new JLabel("Burst Time:"));
@@ -53,14 +59,37 @@ public class ProcessSchedulerGUI extends JFrame {
         inputPanel.add(priorityField);
         inputPanel.add(addButton);
 
-        JPanel panel = new JPanel();
-        panel.add(loadButton);
-        panel.add(saveButton);
-        panel.add(runButton);
+        JPanel initPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
 
+        gbc.gridx = 0; gbc.gridy = 0;
+        initPanel.add(new JLabel("CONTEXT_SWITCH: "), gbc);
+        gbc.gridx = 1; gbc.gridy = 0;
+        initPanel.add(contextSwitchField, gbc);
+
+        gbc.gridx = 0; gbc.gridy = 1;
+        initPanel.add(new JLabel("QUANTUM: "), gbc);
+        gbc.gridx = 1; gbc.gridy = 1;
+        initPanel.add(quantumField, gbc);
+
+        gbc.gridx = 0; gbc.gridy = 2;
+        initPanel.add(new JLabel("RQ_SIZE: "), gbc);
+        gbc.gridx = 1; gbc.gridy = 2;
+        initPanel.add(rqSizeField, gbc);
+
+        gbc.gridx = 1; gbc.gridy = 3;
+        initPanel.add(setButton, gbc);
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(loadButton);
+        buttonPanel.add(saveButton);
+        buttonPanel.add(runButton);
+
+        setLayout(new BorderLayout());
         add(scrollPane, BorderLayout.CENTER);
-        add(panel, BorderLayout.SOUTH);
+        add(buttonPanel, BorderLayout.SOUTH);
         add(inputPanel, BorderLayout.NORTH);
+        add(initPanel, BorderLayout.WEST);
     }
 
     private void loadFile() {
@@ -100,6 +129,12 @@ public class ProcessSchedulerGUI extends JFrame {
                 e.printStackTrace();
             }
         }
+    }
+
+    private void setInit() {
+        contextSwitch = contextSwitchField.getText().isEmpty() ? "0" : contextSwitchField.getText();
+        quantum = quantumField.getText().isEmpty() ? "20" : quantumField.getText();
+        rqSize = rqSizeField.getText().isEmpty() ? "3" : rqSizeField.getText();
     }
 
     private void addRow() {
@@ -156,14 +191,50 @@ public class ProcessSchedulerGUI extends JFrame {
 
                 // 현재 작업 디렉토리의 경로를 얻습니다.
                 String currentWorkingDirectory = System.getProperty("user.dir");
-                String command = "./a.out " + tempFile.getAbsolutePath() + " " + priority;
+                // make clean
+//                ProcessBuilder makeProcessBuilder2 = new ProcessBuilder("make", "clean");
+//                makeProcessBuilder2.inheritIO();
+//                Process makeProcess2 = makeProcessBuilder2.start();
+//                int makeExitCode2 = makeProcess2.waitFor();
+//                if (makeExitCode2 != 0) {
+//                    System.out.println("Make Failed : " + makeExitCode2);
+//                    return;
+//                }
+
+                ProcessBuilder makeProcessBuilder = new ProcessBuilder("make", "scheduler",
+                        "CONTEXT_SWITCH=" + contextSwitch,
+                        "QUANTUM=" + quantum,
+                        "RQ_SIZE=" + rqSize);
+                makeProcessBuilder.inheritIO();
+                Process makeProcess = makeProcessBuilder.start();
+                int makeExitCode = makeProcess.waitFor();
+                if (makeExitCode != 0) {
+                    System.out.println("Make Failed : " + makeExitCode);
+                    return;
+                }
+
+                // String currentWorkingDirectory = System.getProperty("user.dir");
+                // String command = "./bins/scheduler " + tempFile.getAbsolutePath() + " " + priority;
+
+                // ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
+                // runProcessBuilder.inheritIO();
+                // Process runProcess = runProcessBuilder.start();
+                // int runExitCode = runProcess.waitFor();
+                // if (runExitCode != 0) {
+                //     System.out.println("Run Failed : " + runExitCode);
+                //     return;
+                // }
+
+                // 현재 작업 디렉토리의 경로를 얻습니다.
+                // String currentWorkingDirectory = System.getProperty("user.dir");
+                String command = "./bins/scheduler " + tempFile.getAbsolutePath() + " " + priority;
 
                 ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
                 // ProcessBuilder의 작업 디렉토리를 현재 작업 디렉토리로 설정합니다.
                 processBuilder.directory(new File(currentWorkingDirectory));
                 processBuilder.redirectErrorStream(true);
 
-                java.lang.Process process = processBuilder.start();
+                Process process = processBuilder.start();
 
                 BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
                 StringBuilder output = new StringBuilder();
@@ -185,6 +256,7 @@ public class ProcessSchedulerGUI extends JFrame {
                     }
                     showOutput(output.toString());
                 });
+
             } catch (IOException | InterruptedException ex) {
                 ex.printStackTrace();
             }
@@ -208,13 +280,11 @@ public class ProcessSchedulerGUI extends JFrame {
         ArrayList<ResultInfo> result = new ArrayList<>();
         int maxTime = 0;
 
-        Pattern pattern = Pattern.compile("(\\d+)s : (Process|Monitor :) (\\d+) is (submitted|running|working|waiting)");
-        Pattern pattern1 = Pattern.compile("(\\d+)s : (Monitor :) (\\d+) finished");
+        Pattern pattern = Pattern.compile("(\\d+)s : (Process|Monitor :) (\\d+) is (working|waiting)");
         Pattern pattern2 = Pattern.compile("Average (Response|Waiting|Turnaround) Time: (\\d+\\.\\d+)");
 
         for(String line : lines) {
             Matcher matcher = pattern.matcher(line);
-            Matcher matcher1 = pattern1.matcher(line);
             Matcher matcher2 = pattern2.matcher(line);
             if (matcher.find()) {
                 int time = Integer.parseInt(matcher.group(1));
@@ -225,14 +295,6 @@ public class ProcessSchedulerGUI extends JFrame {
                 processMap.get(processId).add(new ProcessInfo(time, action));
                 if (time > maxTime) maxTime = time;
             }
-            if (matcher1.find()) {
-                int time1 = Integer.parseInt(matcher1.group(1));
-                int processId1 = Integer.parseInt(matcher1.group(3));
-
-                processMap.putIfAbsent(processId1, new ArrayList<>());
-                processMap.get(processId1).add(new ProcessInfo(time1, "finished"));
-                if (time1 > maxTime) maxTime = time1;
-            }
             if (matcher2.find()) {
                 double time2 = Double.parseDouble((matcher2.group(2)));
                 result.add(new ResultInfo(time2));
@@ -241,11 +303,11 @@ public class ProcessSchedulerGUI extends JFrame {
         }
 
         // 결과 출력
-//        processMap.forEach((id, list) -> {
-//            System.out.println("Process " + id + ":");
-//            list.forEach(processInfo -> System.out.println(processInfo.toString()));
-//            System.out.println();
-//        });
+        processMap.forEach((id, list) -> {
+            System.out.println("Process " + id + ":");
+            list.forEach(processInfo -> System.out.println(processInfo.toString()));
+            System.out.println();
+        });
 
         GanttChart ganttChart = new GanttChart(processMap, maxTime, result);
         JScrollPane chartScrollPane = new JScrollPane(ganttChart, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
