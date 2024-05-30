@@ -26,6 +26,9 @@ run	:	all
 scheduler :
 		$(MAKE) -C bins CONTEXT_SWITCH=$(CONTEXT_SWITCH) QUANTUM=$(QUANTUM) RQ_SIZE=$(RQ_SIZE)
 
+clean_scheduler :
+		$(MAKE) -C bins clean
+
 clean	:
 		rm -f *.class
 		$(MAKE) -C bins fclean

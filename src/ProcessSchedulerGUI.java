@@ -207,7 +207,7 @@ public class ProcessSchedulerGUI extends JFrame {
 
                 // 현재 작업 디렉토리의 경로를 얻습니다.
                 String currentWorkingDirectory = System.getProperty("user.dir");
-
+                System.out.println(contextSwitch + " " + quantum + " " + rqSize);
                 ProcessBuilder makeProcessBuilder = new ProcessBuilder("make", "scheduler",
                         "CONTEXT_SWITCH=" + contextSwitch,
                         "QUANTUM=" + quantum,
@@ -250,6 +250,14 @@ public class ProcessSchedulerGUI extends JFrame {
                     showOutput(output.toString());
                 });
 
+                ProcessBuilder exitProcessBuilder = new ProcessBuilder("make", "clean_scheduler");
+                exitProcessBuilder.inheritIO();
+                Process exitProcess = exitProcessBuilder.start();
+                int exitExitCode = exitProcess.waitFor();
+                if (exitExitCode != 0) {
+                    System.out.println("Exit Failed : " + exitExitCode);
+                    return;
+                }
             } catch (IOException | InterruptedException ex) {
                 ex.printStackTrace();
             }

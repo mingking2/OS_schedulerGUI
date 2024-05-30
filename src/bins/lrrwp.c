@@ -173,7 +173,7 @@ static void job_two_c(t_setting *set, int running_id, t_ready_queue **job, int t
 		*job = NULL;
 	} else {
 		pthread_mutex_lock(set->mutex_list->p);
-		printf("%ds : Monitor : %d is running\n", time, running_id);
+		printf("%ds : Monitor : %d is working\n", time, running_id);
 		pthread_mutex_unlock(set->mutex_list->p);
 		pthread_mutex_lock(set->mutex_list->cpu);
 		set->values->cpu_working = TRUE;
