@@ -340,14 +340,14 @@ public class ProcessSchedulerGUI extends JFrame {
 
         GanttChart ganttChart = new GanttChart(processMap, maxTime, result);
         JScrollPane chartScrollPane = new JScrollPane(ganttChart, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-        //chartScrollPane.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
-        //chartScrollPane.setViewportBorder(null); // 내부 여백 제거
+        chartScrollPane.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
+        chartScrollPane.setViewportBorder(null); // 내부 여백 제거
 
         resultChartPanel.add(resultPanel, BorderLayout.CENTER);
 
         panel.add(textPanel, BorderLayout.WEST);
         panel.add(resultChartPanel, BorderLayout.EAST);
-        panel.add(chartScrollPane, BorderLayout.SOUTH);
+        panel.add(chartScrollPane, BorderLayout.CENTER);
 
         outputFrame.add(panel);
         outputFrame.setVisible(true);

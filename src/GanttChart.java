@@ -24,7 +24,7 @@ public class GanttChart extends JPanel {
         this.cells = new JPanel[processMap.size()][maxTime];
 
         setLayout(null);
-        this.setPreferredSize(new Dimension((maxTime + 2) * cellWidth, processMap.size() * 80 + 100));
+        this.setPreferredSize(new Dimension((maxTime + 2) * cellWidth, processMap.size() * (processHeight + processGap) + 100));
         initializeCells();
     }
 
