@@ -15,180 +15,181 @@ public class ProcessSchedulerGUI extends JFrame {
     private String contextSwitch = "0", quantum = "20", rqSize = "3";
 
     public ProcessSchedulerGUI() {
-        setTitle("Process Scheduler");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(800, 400);
-        setLocationRelativeTo(null);
+            setTitle("Process Scheduler");
+            setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            setSize(800, 400);
+            setLocationRelativeTo(null);
 
-        tableModel = new DefaultTableModel(new Object[]{"Process ID", "Burst Time", "Arrival Time", "Priority"}, 0);
-        table = new JTable(tableModel);
-        JScrollPane scrollPane = new JScrollPane(table);
+            tableModel = new DefaultTableModel(new Object[]{"Process ID", "Burst Time", "Arrival Time", "Priority"}, 0);
+            table = new JTable(tableModel);
+            JScrollPane scrollPane = new JScrollPane(table);
 
-        JButton loadButton = new JButton("Load File");
-        loadButton.addActionListener(e -> loadFile());
+            JButton loadButton = new JButton("Load File");
+            loadButton.addActionListener(e -> loadFile());
 
-        JButton saveButton = new JButton("Save File");
-        saveButton.addActionListener(e -> saveFile());
+            JButton saveButton = new JButton("Save File");
+            saveButton.addActionListener(e -> saveFile());
 
-        JButton runButton = new JButton("Run Scheduler");
-        runButton.addActionListener(e -> runScheduler());
+            JButton runButton = new JButton("Run Scheduler");
+            runButton.addActionListener(e -> runScheduler());
 
-        JButton addButton = new JButton("Add");
-        addButton.addActionListener(e -> addRow());
+            JButton addButton = new JButton("Add");
+            addButton.addActionListener(e -> addRow());
 
-        JButton randomButton = new JButton("Random");
-        randomButton.addActionListener(e -> addRandomRow());
+            JButton setButton = new JButton("Set");
+            setButton.addActionListener(e -> setInit());
 
-        JButton setButton = new JButton("Set");
-        setButton.addActionListener(e -> setInit());
+            JButton randomButton = new JButton("Random");
+            randomButton.addActionListener(e -> addRandomRow());
 
-        processIdField = new JTextField(5);
-        burstTimeField = new JTextField(5);
-        arrivalTimeField = new JTextField(5);
-        priorityField = new JTextField(5);
+            processIdField = new JTextField(5);
+            burstTimeField = new JTextField(5);
+            arrivalTimeField = new JTextField(5);
+            priorityField = new JTextField(5);
 
-        contextSwitchField = new JTextField(5);
-        quantumField = new JTextField(5);
-        rqSizeField = new JTextField(5);
+            contextSwitchField = new JTextField(5);
+            quantumField = new JTextField(5);
+            rqSizeField = new JTextField(5);
 
-        JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        inputPanel.add(new JLabel("Process ID:"));
-        inputPanel.add(processIdField);
-        inputPanel.add(new JLabel("Burst Time:"));
-        inputPanel.add(burstTimeField);
-        inputPanel.add(new JLabel("Arrival Time:"));
-        inputPanel.add(arrivalTimeField);
-        inputPanel.add(new JLabel("Priority:"));
-        inputPanel.add(priorityField);
-        inputPanel.add(addButton);
-        inputPanel.add(randomButton);
+            JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 5));
+            inputPanel.add(new JLabel("Process ID:"));
+            inputPanel.add(processIdField);
+            inputPanel.add(new JLabel("Burst Time:"));
+            inputPanel.add(burstTimeField);
+            inputPanel.add(new JLabel("Arrival Time:"));
+            inputPanel.add(arrivalTimeField);
+            inputPanel.add(new JLabel("Priority:"));
+            inputPanel.add(priorityField);
+            inputPanel.add(addButton);
+            inputPanel.add(randomButton);
 
-        JPanel initPanel = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
+            JPanel initPanel = new JPanel(new GridBagLayout());
+            GridBagConstraints gbc = new GridBagConstraints();
 
-        gbc.gridx = 0; gbc.gridy = 0;
-        initPanel.add(new JLabel("CONTEXT_SWITCH: "), gbc);
-        gbc.gridx = 1; gbc.gridy = 0;
-        initPanel.add(contextSwitchField, gbc);
+            gbc.gridx = 0; gbc.gridy = 0;
+            initPanel.add(new JLabel("CONTEXT_SWITCH: "), gbc);
+            gbc.gridx = 1; gbc.gridy = 0;
+            initPanel.add(contextSwitchField, gbc);
 
-        gbc.gridx = 0; gbc.gridy = 1;
-        initPanel.add(new JLabel("QUANTUM: "), gbc);
-        gbc.gridx = 1; gbc.gridy = 1;
-        initPanel.add(quantumField, gbc);
+            gbc.gridx = 0; gbc.gridy = 1;
+            initPanel.add(new JLabel("QUANTUM: "), gbc);
+            gbc.gridx = 1; gbc.gridy = 1;
+            initPanel.add(quantumField, gbc);
 
-        gbc.gridx = 0; gbc.gridy = 2;
-        initPanel.add(new JLabel("RQ_SIZE: "), gbc);
-        gbc.gridx = 1; gbc.gridy = 2;
-        initPanel.add(rqSizeField, gbc);
+            gbc.gridx = 0; gbc.gridy = 2;
+            initPanel.add(new JLabel("RQ_SIZE: "), gbc);
+            gbc.gridx = 1; gbc.gridy = 2;
+            initPanel.add(rqSizeField, gbc);
 
-        gbc.gridx = 1; gbc.gridy = 3;
-        initPanel.add(setButton, gbc);
+            gbc.gridx = 1; gbc.gridy = 3;
+            initPanel.add(setButton, gbc);
 
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.add(loadButton);
-        buttonPanel.add(saveButton);
-        buttonPanel.add(runButton);
+            JPanel buttonPanel = new JPanel();
+            buttonPanel.add(loadButton);
+            buttonPanel.add(saveButton);
+            buttonPanel.add(runButton);
 
-        setLayout(new BorderLayout());
-        add(scrollPane, BorderLayout.CENTER);
-        add(buttonPanel, BorderLayout.SOUTH);
-        add(inputPanel, BorderLayout.NORTH);
-        add(initPanel, BorderLayout.WEST);
+            setLayout(new BorderLayout());
+            add(scrollPane, BorderLayout.CENTER);
+            add(buttonPanel, BorderLayout.SOUTH);
+            add(inputPanel, BorderLayout.NORTH);
+            add(initPanel, BorderLayout.WEST);
     }
 
-    private void loadFile() {
-        JFileChooser fileChooser = new JFileChooser();
-        int result = fileChooser.showOpenDialog(this);
-        if (result == JFileChooser.APPROVE_OPTION) {
-            File loadedFile = fileChooser.getSelectedFile();
-            try (BufferedReader br = new BufferedReader(new FileReader(loadedFile))) {
-                headerLine = br.readLine();
-                String line;
-                tableModel.setRowCount(0);
-                while ((line = br.readLine()) != null) {
-                    String[] data = line.split(" ");
-                    tableModel.addRow(data);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private void saveFile() {
-        JFileChooser fileChooser = new JFileChooser();
-        int result = fileChooser.showSaveDialog(this);
-        if (result == JFileChooser.APPROVE_OPTION) {
-            File file = fileChooser.getSelectedFile();
-            try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
-                bw.write(headerLine);
-                bw.newLine();
-                for (int i = 0; i < tableModel.getRowCount(); i++) {
-                    for (int j = 0; j < tableModel.getColumnCount(); j++) {
-                        bw.write(Objects.requireNonNull(tableModel.getValueAt(i, j)).toString() + " ");
+        private void loadFile() {
+            JFileChooser fileChooser = new JFileChooser();
+            int result = fileChooser.showOpenDialog(this);
+            if (result == JFileChooser.APPROVE_OPTION) {
+                File loadedFile = fileChooser.getSelectedFile();
+                try (BufferedReader br = new BufferedReader(new FileReader(loadedFile))) {
+                    headerLine = br.readLine();
+                    String line;
+                    tableModel.setRowCount(0);
+                    while ((line = br.readLine()) != null) {
+                        String[] data = line.split(" ");
+                        tableModel.addRow(data);
                     }
-                    bw.newLine();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
             }
         }
-    }
 
-    private void setInit() {
-        contextSwitch = contextSwitchField.getText().isEmpty() ? "0" : contextSwitchField.getText();
-        quantum = quantumField.getText().isEmpty() ? "20" : quantumField.getText();
-        rqSize = rqSizeField.getText().isEmpty() ? "3" : rqSizeField.getText();
-    }
-
-    private void addRow() {
-        String processId = processIdField.getText();
-        String burstTime = burstTimeField.getText();
-        String arrivalTime = arrivalTimeField.getText();
-        String priority = priorityField.getText();
-
-        if (!processId.isEmpty() && !burstTime.isEmpty() && !arrivalTime.isEmpty() && !priority.isEmpty()) {
-            tableModel.addRow(new Object[]{processId, burstTime, arrivalTime, priority});
-            processIdField.setText("");
-            burstTimeField.setText("");
-            arrivalTimeField.setText("");
-            priorityField.setText("");
-        } else {
-            JOptionPane.showMessageDialog(this, "모든 필드를 채워주세요.", "입력 오류", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    private void addRandomRow() {
-        Random random = new Random();
-
-        int lastRowIndex = tableModel.getRowCount() - 1;
-        int processId = lastRowIndex >= 0 ? Integer.parseInt(tableModel.getValueAt(lastRowIndex, 0).toString()) + 1 : 1;
-        int burstTime = random.nextInt(10) + 1;
-        int arrivalTime = random.nextInt(20);
-        int priority = random.nextInt(10) + 1;
-
-        tableModel.addRow(new Object[]{String.valueOf(processId), String.valueOf(burstTime), String.valueOf(arrivalTime), String.valueOf(priority)});
-    }
-    private void runScheduler() {
-        JFrame newFrame = new JFrame("Choose Priority");
-        newFrame.setSize(300, 200);
-        newFrame.setLayout(new GridLayout(1, 5));
-
-        String[] buttonNames = {"fcfs", "sjf", "srtf", "rr", "lrrwp"};
-
-        for (int i = 0; i < 5; i++) {
-            JButton button = new JButton(buttonNames[i]);
-            int finalI = i + 1;  // executeCommand에 전달될 값 조정
-            button.addActionListener(e -> {
-                executeCommand(finalI);
-                newFrame.dispose();
-            });
-            newFrame.add(button);
+        private void saveFile() {
+            JFileChooser fileChooser = new JFileChooser();
+            int result = fileChooser.showSaveDialog(this);
+            if (result == JFileChooser.APPROVE_OPTION) {
+                File file = fileChooser.getSelectedFile();
+                try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
+                    bw.write(headerLine);
+                    bw.newLine();
+                    for (int i = 0; i < tableModel.getRowCount(); i++) {
+                        for (int j = 0; j < tableModel.getColumnCount(); j++) {
+                            bw.write(Objects.requireNonNull(tableModel.getValueAt(i, j)).toString() + " ");
+                        }
+                        bw.newLine();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
-        newFrame.setLocationRelativeTo(this);
-        newFrame.setVisible(true);
-    }
+        private void setInit() {
+            contextSwitch = contextSwitchField.getText().isEmpty() ? "0" : contextSwitchField.getText();
+            quantum = quantumField.getText().isEmpty() ? "20" : quantumField.getText();
+            rqSize = rqSizeField.getText().isEmpty() ? "3" : rqSizeField.getText();
+        }
+
+        private void addRow() {
+            String processId = processIdField.getText();
+            String burstTime = burstTimeField.getText();
+            String arrivalTime = arrivalTimeField.getText();
+            String priority = priorityField.getText();
+
+            if (!processId.isEmpty() && !burstTime.isEmpty() && !arrivalTime.isEmpty() && !priority.isEmpty()) {
+                tableModel.addRow(new Object[]{processId, burstTime, arrivalTime, priority});
+                processIdField.setText("");
+                burstTimeField.setText("");
+                arrivalTimeField.setText("");
+                priorityField.setText("");
+            } else {
+                JOptionPane.showMessageDialog(this, "모든 필드를 채워주세요.", "입력 오류", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+
+        private void addRandomRow() {
+            Random random = new Random();
+
+            int lastRowIndex = tableModel.getRowCount() - 1;
+            int processId = lastRowIndex >= 0 ? Integer.parseInt(tableModel.getValueAt(lastRowIndex, 0).toString()) + 1 : 1;
+            int burstTime = random.nextInt(10) + 1;
+            int arrivalTime = random.nextInt(20);
+            int priority = random.nextInt(10) + 1;
+
+            tableModel.addRow(new Object[]{String.valueOf(processId), String.valueOf(burstTime), String.valueOf(arrivalTime), String.valueOf(priority)});
+        }
+
+        private void runScheduler() {
+            JFrame newFrame = new JFrame("Choose Priority");
+            newFrame.setSize(300, 200);
+            newFrame.setLayout(new GridLayout(1, 5));
+
+            String[] buttonNames = {"fcfs", "sjf", "srtf", "rr", "lrrwp"};
+
+            for (int i = 0; i < 5; i++) {
+                JButton button = new JButton(buttonNames[i]);
+                int finalI = i + 1;  // executeCommand에 전달될 값 조정
+                button.addActionListener(e -> {
+                    executeCommand(finalI);
+                    newFrame.dispose();
+                });
+                newFrame.add(button);
+            }
+
+            newFrame.setLocationRelativeTo(this);
+            newFrame.setVisible(true);
+        }
 
 
     private void executeCommand(int priority) {
@@ -339,8 +340,8 @@ public class ProcessSchedulerGUI extends JFrame {
 
         GanttChart ganttChart = new GanttChart(processMap, maxTime, result);
         JScrollPane chartScrollPane = new JScrollPane(ganttChart, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-        chartScrollPane.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
-        chartScrollPane.setViewportBorder(null); // 내부 여백 제거
+        //chartScrollPane.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
+        //chartScrollPane.setViewportBorder(null); // 내부 여백 제거
 
         resultChartPanel.add(resultPanel, BorderLayout.CENTER);
 
@@ -391,9 +392,6 @@ public class ProcessSchedulerGUI extends JFrame {
         // 스크롤 기능이 포함된 JScrollPane를 반환
         return scrollPane;
     }
-
-
-
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
