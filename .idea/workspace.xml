@@ -4,13 +4,28 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ae8e3ee5-42ac-4857-b689-787a8d6a8479" name="Changes" comment="간트차트 클래스 추가">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/jfreechart_1_0_19_demo.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/OS_schedular.iml" afterDir="false" />
+    <list default="true" id="ae8e3ee5-42ac-4857-b689-787a8d6a8479" name="Changes" comment="최종 결과 데이터 파싱 추가">
+      <change afterPath="$PROJECT_DIR$/src/InitInfo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/ResultInfo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/bins/Makefile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/bins/cycle.c" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/bins/fcfs.c" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/bins/free.c" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/bins/init.c" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/bins/init.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/bins/lrrwp.c" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/bins/main.c" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/bins/rr.c" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/bins/scheduling.c" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/bins/scheduling.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/bins/sjf.c" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/bins/srtf.c" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/bins/utils.c" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/bins/utils.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/a.out" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/GanttChart.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/GanttChart.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ProcessSchedulerGUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ProcessSchedulerGUI.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,6 +58,7 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/Users/mingking/Path/OS_schedular/src",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -55,6 +71,14 @@
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src" />
+    </key>
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="" />
+    </key>
+  </component>
   <component name="RunManager" selected="Application.ProcessSchedulerGUI">
     <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="test.Main" />
@@ -98,7 +122,10 @@
       <option name="presentableId" value="Default" />
       <updated>1716202749526</updated>
       <workItem from="1716202750592" duration="15712000" />
-      <workItem from="1716223153550" duration="10281000" />
+      <workItem from="1716223153550" duration="14355000" />
+      <workItem from="1716273515592" duration="2844000" />
+      <workItem from="1716794954939" duration="28000" />
+      <workItem from="1716991710210" duration="15842000" />
     </task>
     <task id="LOCAL-00001" summary="ProcessSchedulerGUI 메인 클래스 작성">
       <option name="closed" value="true" />
@@ -132,7 +159,39 @@
       <option name="project" value="LOCAL" />
       <updated>1716255857334</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="기타">
+      <option name="closed" value="true" />
+      <created>1716256037979</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1716256037979</updated>
+    </task>
+    <task id="LOCAL-00006" summary="GUI 간격 조정">
+      <option name="closed" value="true" />
+      <created>1716263668425</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1716263668425</updated>
+    </task>
+    <task id="LOCAL-00007" summary="GUI 간격 조정">
+      <option name="closed" value="true" />
+      <created>1716794972006</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1716794972006</updated>
+    </task>
+    <task id="LOCAL-00008" summary="최종 결과 데이터 파싱 추가">
+      <option name="closed" value="true" />
+      <created>1716995987661</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1716995987661</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -154,7 +213,10 @@
     <MESSAGE value="command 실행파일 추가" />
     <MESSAGE value="ProcessInfo 클래스 추가" />
     <MESSAGE value="간트차트 클래스 추가" />
-    <option name="LAST_COMMIT_MESSAGE" value="간트차트 클래스 추가" />
+    <MESSAGE value="기타" />
+    <MESSAGE value="GUI 간격 조정" />
+    <MESSAGE value="최종 결과 데이터 파싱 추가" />
+    <option name="LAST_COMMIT_MESSAGE" value="최종 결과 데이터 파싱 추가" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
