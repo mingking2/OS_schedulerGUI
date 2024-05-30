@@ -24,7 +24,7 @@ public class GanttChart extends JPanel {
         this.cells = new JPanel[processMap.size()][maxTime];
 
         setLayout(null);
-        this.setPreferredSize(new Dimension((maxTime + 2) * cellWidth, processMap.size() * (processHeight + processGap) + 100));
+        this.setPreferredSize(new Dimension((maxTime * 2) * cellWidth, processMap.size() * (processHeight + processGap) + 100));
         initializeCells();
     }
 
@@ -33,6 +33,10 @@ public class GanttChart extends JPanel {
         int processIndex = 0;
         for (Map.Entry<Integer, ArrayList<ProcessInfo>> entry : processMap.entrySet()) {
             int x = 50;
+            JLabel idxLabel = new JLabel(String.valueOf(processIndex + 1));
+            idxLabel.setBounds(x - 30, y, 20, processHeight); // 레이블의 위치와 크기를 설정
+            this.add(idxLabel); // 레이블을 패널에 추가
+
             for (int time = 0; time < maxTime; time++) {
                 cells[processIndex][time] = new JPanel();
                 cells[processIndex][time].setBackground(Color.WHITE);
@@ -52,12 +56,11 @@ public class GanttChart extends JPanel {
         drawTitle(g);
         drawLegend(g);
         updateCells();
-        drawResult(g);
     }
 
     private void drawTitle(Graphics g) {
         g.setFont(new Font("Arial", Font.BOLD, 20));
-        g.drawString("Gantt Chart", getWidth() / 2 - 50, 30);
+        g.drawString("Gantt Chart", 50, 30);
         g.setFont(new Font("Arial", Font.PLAIN, 12));
     }
 
@@ -67,8 +70,8 @@ public class GanttChart extends JPanel {
         int legendWidth = 50;
         int legendHeight = 20;
 
-        String[] actions = {"working", "waiting"};
-        Color[] colors = {Color.BLUE, Color.ORANGE};
+        String[] actions = {"working", "waiting", "empty | context_switch"};
+        Color[] colors = {Color.BLUE, Color.ORANGE, Color.WHITE};
 
         for (int i = 0; i < actions.length; i++) {
             g.setColor(colors[i]);
@@ -83,7 +86,7 @@ public class GanttChart extends JPanel {
     private void updateCells() {
         int processIndex = 0;
         for (Map.Entry<Integer, ArrayList<ProcessInfo>> entry : processMap.entrySet()) {
-            int processId = entry.getKey();
+            //int processId = entry.getKey();
             ArrayList<ProcessInfo> infoList = entry.getValue();
 
             for (ProcessInfo info : infoList) {
@@ -95,15 +98,6 @@ public class GanttChart extends JPanel {
             }
             processIndex++;
         }
-    }
-
-    private void drawResult(Graphics g) {
-        int y = getHeight() - 120;
-        g.setFont(new Font("Arial", Font.BOLD, 16));
-        g.setColor(Color.BLACK);
-        g.drawString("Average Response Time: " + resultInfos.get(0).getTime(), 50, y);
-        g.drawString("Average Waiting Time: " + resultInfos.get(1).getTime(), 50, y + 20);
-        g.drawString("Average Turnaround Time: " + resultInfos.get(2).getTime(), 50, y + 40);
     }
 
     private Color getColorForAction(String action) {
