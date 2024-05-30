@@ -248,7 +248,11 @@ public class ProcessSchedulerGUI extends JFrame {
                         // 오류 처리
                         System.out.println("실행 실패.");
                     }
-                    showOutput(output.toString());
+                    try {
+                        showOutput(output.toString());
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                 });
 
                 ProcessBuilder exitProcessBuilder = new ProcessBuilder("make", "clean_scheduler");
@@ -265,7 +269,7 @@ public class ProcessSchedulerGUI extends JFrame {
         }).start();
     }
 
-    private void showOutput(String output) {
+    private void showOutput(String output) throws IOException {
         JFrame outputFrame = new JFrame("Scheduler Output");
         outputFrame.setSize(1200, 800);
 
@@ -335,7 +339,7 @@ public class ProcessSchedulerGUI extends JFrame {
         JPanel resultChartPanel = new JPanel(new BorderLayout(0, 0));
         resultChartPanel.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
 
-        JScrollPane resultContentPanel = createResultPanel(processResult);
+        JScrollPane resultContentPanel = createResultPanel(processResult, result);
         resultPanel.add(resultContentPanel, BorderLayout.CENTER);
 
         GanttChart ganttChart = new GanttChart(processMap, maxTime, result);
@@ -349,15 +353,46 @@ public class ProcessSchedulerGUI extends JFrame {
         panel.add(resultChartPanel, BorderLayout.EAST);
         panel.add(chartScrollPane, BorderLayout.CENTER);
 
+        textPanel.setPreferredSize(new Dimension(250,0));
+        resultChartPanel.setPreferredSize(new Dimension(300,0));
         outputFrame.add(panel);
         outputFrame.setVisible(true);
     }
 
-    private JScrollPane createResultPanel(HashMap<Integer, ArrayList<ProcessInfo>> processResult) {
+    private JScrollPane createResultPanel(HashMap<Integer, ArrayList<ProcessInfo>> processResult, ArrayList<ResultInfo> result) throws IOException {
+        saveResultToFile(processResult, result);
+
         // 스크롤을 위해 내부 패널 생성
-        JPanel resultPanel = new JPanel();
+        JPanel resultPanel = new JPanel(new BorderLayout(0,0));
         resultPanel.setLayout(new BoxLayout(resultPanel, BoxLayout.Y_AXIS));
         resultPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        JLabel allLabel = new JLabel("Total Average Times");
+        allLabel.setHorizontalAlignment(JLabel.CENTER);
+        allLabel.setFont(new Font("Serif", Font.BOLD, 20));
+        allLabel.setForeground(Color.RED);
+        resultPanel.add(allLabel);
+
+        JLabel aWLabel = new JLabel("Average Waiting Time: " + result.get(1).getTime());
+        aWLabel.setHorizontalAlignment(JLabel.CENTER);
+        aWLabel.setFont(new Font("Serif", Font.PLAIN, 16));
+        resultPanel.add(Box.createVerticalStrut(10));
+        resultPanel.add(aWLabel);
+
+        JLabel aTLabel = new JLabel("Average Turnaround Time: " + result.get(2).getTime());
+        resultPanel.add(Box.createVerticalStrut(10));
+        aTLabel.setHorizontalAlignment(JLabel.CENTER);
+        aTLabel.setFont(new Font("Serif", Font.PLAIN, 16));
+        resultPanel.add(aTLabel);
+
+        JLabel aRLabel = new JLabel("Average Response Time: " + result.get(0).getTime());
+        aRLabel.setHorizontalAlignment(JLabel.CENTER);
+        aRLabel.setFont(new Font("Serif", Font.PLAIN, 16));
+        resultPanel.add(Box.createVerticalStrut(10));
+        resultPanel.add(aRLabel);
+
+        resultPanel.add(Box.createVerticalStrut(10));
+
 
         JLabel titleLabel = new JLabel("Average Process Times");
         titleLabel.setHorizontalAlignment(JLabel.CENTER);
@@ -392,6 +427,32 @@ public class ProcessSchedulerGUI extends JFrame {
         // 스크롤 기능이 포함된 JScrollPane를 반환
         return scrollPane;
     }
+
+    private void saveResultToFile(HashMap<Integer, ArrayList<ProcessInfo>> processResult, ArrayList<ResultInfo> result) throws IOException {
+        // 임시 파일 생성
+        String currentWorkingDirectory = System.getProperty("user.dir");
+
+        File tempFile = new File(currentWorkingDirectory, "output" + (int)(Math.random()*1000) + ".csv");
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(tempFile))) {
+            // 평균 대기 시간, 평균 반환 시간, 평균 응답 시간 저장
+            bw.write("W,T,R");
+            bw.newLine();
+            bw.write(result.get(1).getTime() + "," + result.get(2).getTime() + "," + result.get(0).getTime());
+            bw.newLine();
+
+            // 프로세스별 시간 데이터 저장
+            for (Map.Entry<Integer, ArrayList<ProcessInfo>> entry : processResult.entrySet()) {
+                ArrayList<ProcessInfo> pr = entry.getValue();
+                for (ProcessInfo t : pr) {
+                    bw.write(t.getTime() + ","); // 여기서는 각 프로세스 정보를 콤마로 구분하여 저장합니다.
+                }
+                bw.newLine();
+            }
+        }
+        // 파일 경로 출력 또는 다른 처리
+        System.out.println("결과가 저장된 파일: " + tempFile.getAbsolutePath());
+    }
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
