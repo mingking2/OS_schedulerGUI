@@ -36,6 +36,9 @@ public class ProcessSchedulerGUI extends JFrame {
         JButton addButton = new JButton("Add");
         addButton.addActionListener(e -> addRow());
 
+        JButton randomButton = new JButton("Random");
+        randomButton.addActionListener(e -> addRandomRow());
+
         JButton setButton = new JButton("Set");
         setButton.addActionListener(e -> setInit());
 
@@ -58,6 +61,7 @@ public class ProcessSchedulerGUI extends JFrame {
         inputPanel.add(new JLabel("Priority:"));
         inputPanel.add(priorityField);
         inputPanel.add(addButton);
+        inputPanel.add(randomButton);
 
         JPanel initPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -154,14 +158,25 @@ public class ProcessSchedulerGUI extends JFrame {
         }
     }
 
+    private void addRandomRow() {
+        Random random = new Random();
+
+        int lastRowIndex = tableModel.getRowCount() - 1;
+        int processId = lastRowIndex >= 0 ? Integer.parseInt(tableModel.getValueAt(lastRowIndex, 0).toString()) + 1 : 1;
+        int burstTime = random.nextInt(10) + 1;
+        int arrivalTime = random.nextInt(20);
+        int priority = random.nextInt(10) + 1;
+
+        tableModel.addRow(new Object[]{String.valueOf(processId), String.valueOf(burstTime), String.valueOf(arrivalTime), String.valueOf(priority)});
+    }
     private void runScheduler() {
         JFrame newFrame = new JFrame("Choose Priority");
         newFrame.setSize(300, 200);
-        newFrame.setLayout(new GridLayout(1, 4));
+        newFrame.setLayout(new GridLayout(1, 5));
 
-        String[] buttonNames = {"fcfs", "sjf", "srtf", "rr"};
+        String[] buttonNames = {"fcfs", "sjf", "srtf", "rr", "lrrwp"};
 
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 5; i++) {
             JButton button = new JButton(buttonNames[i]);
             int finalI = i + 1;  // executeCommand에 전달될 값 조정
             button.addActionListener(e -> {
@@ -174,6 +189,7 @@ public class ProcessSchedulerGUI extends JFrame {
         newFrame.setLocationRelativeTo(this);
         newFrame.setVisible(true);
     }
+
 
     private void executeCommand(int priority) {
         new Thread(() -> {
@@ -191,15 +207,6 @@ public class ProcessSchedulerGUI extends JFrame {
 
                 // 현재 작업 디렉토리의 경로를 얻습니다.
                 String currentWorkingDirectory = System.getProperty("user.dir");
-                // make clean
-//                ProcessBuilder makeProcessBuilder2 = new ProcessBuilder("make", "clean");
-//                makeProcessBuilder2.inheritIO();
-//                Process makeProcess2 = makeProcessBuilder2.start();
-//                int makeExitCode2 = makeProcess2.waitFor();
-//                if (makeExitCode2 != 0) {
-//                    System.out.println("Make Failed : " + makeExitCode2);
-//                    return;
-//                }
 
                 ProcessBuilder makeProcessBuilder = new ProcessBuilder("make", "scheduler",
                         "CONTEXT_SWITCH=" + contextSwitch,
@@ -213,20 +220,6 @@ public class ProcessSchedulerGUI extends JFrame {
                     return;
                 }
 
-                // String currentWorkingDirectory = System.getProperty("user.dir");
-                // String command = "./bins/scheduler " + tempFile.getAbsolutePath() + " " + priority;
-
-                // ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
-                // runProcessBuilder.inheritIO();
-                // Process runProcess = runProcessBuilder.start();
-                // int runExitCode = runProcess.waitFor();
-                // if (runExitCode != 0) {
-                //     System.out.println("Run Failed : " + runExitCode);
-                //     return;
-                // }
-
-                // 현재 작업 디렉토리의 경로를 얻습니다.
-                // String currentWorkingDirectory = System.getProperty("user.dir");
                 String command = "./bins/scheduler " + tempFile.getAbsolutePath() + " " + priority;
 
                 ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
@@ -265,27 +258,35 @@ public class ProcessSchedulerGUI extends JFrame {
 
     private void showOutput(String output) {
         JFrame outputFrame = new JFrame("Scheduler Output");
-        outputFrame.setSize(1000, 600);
+        outputFrame.setSize(1200, 800);
 
-        JPanel panel = new JPanel(new BorderLayout());
+        // BorderLayout의 hgap과 vgap을 0으로 설정
+        JPanel panel = new JPanel(new BorderLayout(0, 0));
 
         JTextArea textArea = new JTextArea(output);
         textArea.setEditable(false);
-        JScrollPane scrollPane = new JScrollPane(textArea);
+        JScrollPane textScrollPane = new JScrollPane(textArea);
+        textScrollPane.setViewportBorder(null); // 내부 여백 제거
 
-        panel.add(scrollPane, BorderLayout.CENTER);
+        JPanel resultPanel = new JPanel(new BorderLayout(0, 0));
 
         String[] lines = output.split("\n");
         HashMap<Integer, ArrayList<ProcessInfo>> processMap = new HashMap<>();
         ArrayList<ResultInfo> result = new ArrayList<>();
+        HashMap<Integer, ArrayList<ProcessInfo>> processResult = new HashMap<>();
         int maxTime = 0;
 
-        Pattern pattern = Pattern.compile("(\\d+)s : (Process|Monitor :) (\\d+) is (working|waiting)");
-        Pattern pattern2 = Pattern.compile("Average (Response|Waiting|Turnaround) Time: (\\d+\\.\\d+)");
+        Pattern pattern = Pattern.compile("(\\d+)s : (Process) (\\d+) is (submitted|running|waiting)");
+        Pattern monitorPattern = Pattern.compile("(\\d+)s : (Monitor) : (\\d+) is (working|finished)");
+        Pattern processPattern = Pattern.compile("Process_ (\\d+) (Response|Waiting|Turnaround) Time (:|;) (\\d+)");
+        Pattern resultPattern = Pattern.compile("Average (Response|Waiting|Turnaround) Time: (\\d+\\.\\d+)");
 
-        for(String line : lines) {
+        for (String line : lines) {
             Matcher matcher = pattern.matcher(line);
-            Matcher matcher2 = pattern2.matcher(line);
+            Matcher monitorMatcher = monitorPattern.matcher(line);
+            Matcher processMatcher = processPattern.matcher(line);
+            Matcher resultMatcher = resultPattern.matcher(line);
+
             if (matcher.find()) {
                 int time = Integer.parseInt(matcher.group(1));
                 int processId = Integer.parseInt(matcher.group(3));
@@ -295,28 +296,95 @@ public class ProcessSchedulerGUI extends JFrame {
                 processMap.get(processId).add(new ProcessInfo(time, action));
                 if (time > maxTime) maxTime = time;
             }
-            if (matcher2.find()) {
-                double time2 = Double.parseDouble((matcher2.group(2)));
-                result.add(new ResultInfo(time2));
-                System.out.println("time2 = " + time2);
+            if (monitorMatcher.find()) {
+                int time1 = Integer.parseInt(monitorMatcher.group(1));
+                int processId = Integer.parseInt(monitorMatcher.group(3));
+                String action = monitorMatcher.group(4);
+
+                processMap.putIfAbsent(processId, new ArrayList<>());
+                processMap.get(processId).add(new ProcessInfo(time1, action));
+                if (time1 > maxTime) maxTime = time1;
+            }
+            if (processMatcher.find()) {
+                int id = Integer.parseInt(processMatcher.group(1));
+                String action2 = processMatcher.group(2);
+                int time2 = Integer.parseInt(processMatcher.group(4));
+
+                processResult.putIfAbsent(id, new ArrayList<>());
+                processResult.get(id).add(new ProcessInfo(time2, action2));
+            }
+            if (resultMatcher.find()) {
+                double time3 = Double.parseDouble(resultMatcher.group(2));
+                result.add(new ResultInfo(time3));
             }
         }
 
-        // 결과 출력
-        processMap.forEach((id, list) -> {
-            System.out.println("Process " + id + ":");
-            list.forEach(processInfo -> System.out.println(processInfo.toString()));
-            System.out.println();
-        });
+        JPanel textPanel = new JPanel(new BorderLayout(0, 0));
+        textPanel.add(textScrollPane, BorderLayout.CENTER);
+        textPanel.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
+
+        JPanel resultChartPanel = new JPanel(new BorderLayout(0, 0));
+        resultChartPanel.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
+
+        JScrollPane resultContentPanel = createResultPanel(processResult);
+        resultPanel.add(resultContentPanel, BorderLayout.CENTER);
 
         GanttChart ganttChart = new GanttChart(processMap, maxTime, result);
         JScrollPane chartScrollPane = new JScrollPane(ganttChart, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        chartScrollPane.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
+        chartScrollPane.setViewportBorder(null); // 내부 여백 제거
 
+        resultChartPanel.add(resultPanel, BorderLayout.CENTER);
 
+        panel.add(textPanel, BorderLayout.WEST);
+        panel.add(resultChartPanel, BorderLayout.EAST);
         panel.add(chartScrollPane, BorderLayout.SOUTH);
+
         outputFrame.add(panel);
         outputFrame.setVisible(true);
     }
+
+    private JScrollPane createResultPanel(HashMap<Integer, ArrayList<ProcessInfo>> processResult) {
+        // 스크롤을 위해 내부 패널 생성
+        JPanel resultPanel = new JPanel();
+        resultPanel.setLayout(new BoxLayout(resultPanel, BoxLayout.Y_AXIS));
+        resultPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        JLabel titleLabel = new JLabel("Average Process Times");
+        titleLabel.setHorizontalAlignment(JLabel.CENTER);
+        titleLabel.setFont(new Font("Serif", Font.BOLD, 20));
+        titleLabel.setForeground(Color.BLUE);
+        resultPanel.add(titleLabel);
+
+        for (Map.Entry<Integer, ArrayList<ProcessInfo>> entry : processResult.entrySet()) {
+            int id = entry.getKey();
+            ArrayList<ProcessInfo> pr = entry.getValue();
+
+            JLabel processLabel = new JLabel("Process " + id + ":");
+            processLabel.setHorizontalAlignment(JLabel.CENTER);
+            processLabel.setFont(new Font("Serif", Font.BOLD, 18));
+            resultPanel.add(Box.createVerticalStrut(10));
+            resultPanel.add(processLabel);
+
+            for (ProcessInfo t : pr) {
+                JLabel timeLabel = new JLabel(t.getAction() + " Time: " + t.getTime());
+                timeLabel.setHorizontalAlignment(JLabel.CENTER);
+                timeLabel.setFont(new Font("Serif", Font.PLAIN, 16));
+                resultPanel.add(timeLabel);
+            }
+            resultPanel.add(Box.createVerticalStrut(10));
+        }
+
+        // JScrollPane에 resultPanel을 추가
+        JScrollPane scrollPane = new JScrollPane(resultPanel);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+
+        // 스크롤 기능이 포함된 JScrollPane를 반환
+        return scrollPane;
+    }
+
+
 
 
     public static void main(String[] args) {
