@@ -33,4 +33,8 @@ clean	:
 		rm -f *.class
 		$(MAKE) -C bins fclean
 
+re	:
+		make clean
+		make all
+
 .PHONY	: all run clean
