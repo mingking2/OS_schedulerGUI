@@ -163,8 +163,8 @@ public class ProcessSchedulerGUI extends JFrame {
 
             int lastRowIndex = tableModel.getRowCount() - 1;
             int processId = lastRowIndex >= 0 ? Integer.parseInt(tableModel.getValueAt(lastRowIndex, 0).toString()) + 1 : 1;
-            int burstTime = random.nextInt(10) + 1;
-            int arrivalTime = random.nextInt(20);
+            int burstTime = random.nextInt(100) + 1;
+            int arrivalTime = random.nextInt(30);
             int priority = random.nextInt(10) + 1;
 
             tableModel.addRow(new Object[]{String.valueOf(processId), String.valueOf(burstTime), String.valueOf(arrivalTime), String.valueOf(priority)});
